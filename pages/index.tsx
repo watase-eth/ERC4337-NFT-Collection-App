@@ -1,54 +1,41 @@
-import { ConnectWallet } from "@thirdweb-dev/react";
 import type { NextPage } from "next";
-import styles from "../styles/Home.module.css";
+import { Box, Container, Flex, Heading, SimpleGrid, Spinner } from "@chakra-ui/react";
+import { useContract, useMetadata } from "@thirdweb-dev/react";
+import { NFT_ADDRESS } from "../constant/addresses";
+import NFTCard from "../components/NFTCard";
 
 const Home: NextPage = () => {
+  const  { contract } = useContract(NFT_ADDRESS);
+
+  const { data: metadata, isLoading: loadingMetadata } = useMetadata(contract);
+  const collectionImage = metadata?.image;
+  const collectionName = metadata?.name;
+
   return (
-    <div className={styles.container}>
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="http://thirdweb.com/">thirdweb</a>!
-        </h1>
-
-        <p className={styles.description}>
-          Get started by configuring your desired network in{" "}
-          <code className={styles.code}>pages/_app.tsx</code>, then modify the{" "}
-          <code className={styles.code}>pages/index.tsx</code> file!
-        </p>
-
-        <div className={styles.connect}>
-          <ConnectWallet />
-        </div>
-
-        <div className={styles.grid}>
-          <a href="https://portal.thirdweb.com/" className={styles.card}>
-            <h2>Portal &rarr;</h2>
-            <p>
-              Guides, references and resources that will help you build with
-              thirdweb.
-            </p>
-          </a>
-
-          <a href="https://thirdweb.com/dashboard" className={styles.card}>
-            <h2>Dashboard &rarr;</h2>
-            <p>
-              Deploy, configure and manage your smart contracts from the
-              dashboard.
-            </p>
-          </a>
-
-          <a
-            href="https://portal.thirdweb.com/templates"
-            className={styles.card}
+    <Container maxW={"1200px"}>
+      {loadingMetadata ? (
+        <Flex h={"90vh"} direction={"column"} justifyContent={"center"} alignItems={"center"}>
+          <Spinner />
+        </Flex>
+      ) : (
+        <Container maxW={"1200px"}>
+          <Box
+            backgroundImage={`url(${collectionImage})`}
+            h={"75vh"}
+            p={8}
+            borderRadius={8}
           >
-            <h2>Templates &rarr;</h2>
-            <p>
-              Discover and clone template projects showcasing thirdweb features.
-            </p>
-          </a>
-        </div>
-      </main>
-    </div>
+            <Heading>{collectionName}</Heading>
+          </Box>
+          <SimpleGrid columns={2} spacing={10} my={10}>
+            <NFTCard tokenId={"0"} />
+            <NFTCard tokenId={"1"} />
+            <NFTCard tokenId={"2"} />
+            <NFTCard tokenId={"3"} />
+          </SimpleGrid>
+        </Container>
+      )}
+    </Container>
   );
 };
 
